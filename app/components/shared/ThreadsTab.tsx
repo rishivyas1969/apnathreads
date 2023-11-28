@@ -1,4 +1,5 @@
 import ThreadCard from "../cards/ThreadCard"
+import { fetchCommunityPosts } from "@/lib/actions/community.actions"
 import { fetchUserPosts } from "@/lib/actions/thread.actions"
 import { redirect } from "next/navigation"
 
@@ -9,7 +10,13 @@ interface Props {
 }
 
 const ThreadsTab = async ({ currentUserId, accountId, accountType }: Props) => {
-    let result = await fetchUserPosts(accountId)
+    let result: any
+
+    if (accountType === 'User') {
+        result = await fetchUserPosts(accountId)
+    } else {
+        result = await fetchCommunityPosts(accountId)
+    }
 
     if (!result) redirect('/')
     return (

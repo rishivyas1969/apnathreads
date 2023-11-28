@@ -1,5 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
+import { classNames } from "uploadthing/client"
+import { formatDateString } from "@/lib/utils"
 
 interface Props {
     id: string,
@@ -86,6 +88,22 @@ const ThreadCard = ({
                     </div>
                 </div>
             </div>
+                { /* TODO: Delte thread */ }
+                { /* TODO: Show comment logos */ }
+
+                { !isComment && community && (
+                    <Link href={`/communities/${community.id}`} className="mt-5 flex items-center">
+                        <p className="text-subtle-medium text-gray-1"> {formatDateString(createdAt)} - {community.name} Community</p>
+
+                        <Image
+                            src={community.image}
+                            alt={community.name}
+                            width={14}
+                            height={14}
+                            className="ml-1 rouded-full object-cover" />
+                    </Link>
+                )}
+            
         </article>
     )
 }

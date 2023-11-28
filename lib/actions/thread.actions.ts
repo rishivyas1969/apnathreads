@@ -1,5 +1,6 @@
 "use server"
 
+import Community from "../models/community.models"
 import Thread from "../models/thread.models"
 import User from "../models/user.models"
 import { connectToDB } from "../mongoose"
@@ -16,15 +17,23 @@ export async function createThread ({ text, author, communityId, path}: Params) 
     try {
         connectToDB()
 
+        const communityIdObject = await Community.findOne({ id: communityId }, { _id: 1 })
+
         const createdThread = await Thread.create({
             text,
             author,
-            community: null,
+            community: communityIdObject,
         })
 
         await User.findByIdAndUpdate(author, {
             $push: { threads: createdThread._id },
         })
+
+        if (communityIdObject) {
+            await Community.findByIdAndUpdate(communityIdObject, {
+                $push: { threads: createdThread._id },
+            })
+        }
 
         revalidatePath(path)
     } catch (err: any) {
@@ -50,6 +59,11 @@ export async function fetchThreads (pagenumber = 1, size = 20) {
                     model: User,
                     select: "_id name parentId image",
                 },
+             })
+             .populate({
+                path: 'community',
+                model: Community,
+                select: 'id _id name image',
              })
 
         const totalThreadCount = await Thread.countDocuments({ parentId: { $in: [null, undefined] }})

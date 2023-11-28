@@ -22,7 +22,6 @@ async function Page ({ params }: { params: {id: string} }) {
         pageSize: 25,
         pageNumber: 1,
     })
-    console.log('\n\n users : ', result.users)
   return (
     <section>
         <h1 className='head-text mb-10'>
